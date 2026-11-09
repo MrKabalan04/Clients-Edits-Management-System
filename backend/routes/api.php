@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\CompanyController;
+use App\Http\Controllers\Api\EditController;
 use App\Http\Controllers\Api\ProjectController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,5 +36,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/projects/{project}', [ProjectController::class, 'update']);
         Route::patch('/projects/{project}', [ProjectController::class, 'update']);
         Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
+
+        Route::get('/edits', [EditController::class, 'index']);
+        Route::post('/edits', [EditController::class, 'store']);
+        Route::get('/edits/{edit}', [EditController::class, 'show']);
+        Route::put('/edits/{edit}', [EditController::class, 'update']);
+        Route::patch('/edits/{edit}', [EditController::class, 'update']);
+        Route::delete('/edits/{edit}', [EditController::class, 'destroy']);
     });
 });
