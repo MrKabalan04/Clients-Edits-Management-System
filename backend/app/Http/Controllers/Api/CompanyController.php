@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Company\StoreCompanyRequest;
 use App\Http\Requests\Company\UpdateCompanyRequest;
 use App\Models\Company;
+use App\Models\Edit;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class CompanyController extends Controller
 {
@@ -18,7 +21,17 @@ class CompanyController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => Company::query()->with('client')->get(),
+            'data' => Company::query()
+                ->with('client')
+                ->withCount('projects')
+                ->selectSub(
+                    Edit::query()
+                        ->selectRaw('count(*)')
+                        ->join('projects', 'projects.id', '=', 'edits.project_id')
+                        ->whereColumn('projects.company_id', 'companies.id'),
+                    'edits_count',
+                )
+                ->get(),
         ]);
     }
 
@@ -49,6 +62,54 @@ class CompanyController extends Controller
             'success' => true,
             'message' => 'Company retrieved successfully.',
             'data' => $company,
+        ]);
+    }
+
+    /**
+     * Return a company's profile and related work using eager-loaded relationships.
+     */
+    public function details(Company $company): JsonResponse
+    {
+        $company->load([
+            'client',
+            'projects' => fn ($query) => $query
+                ->withCount([
+                    'edits',
+                    'edits as pending_edits_count' => fn (Builder $edits) => $edits->where('status', 'pending'),
+                    'edits as completed_edits_count' => fn (Builder $edits) => $edits->where('status', 'done'),
+                ])
+                ->orderBy('name'),
+        ]);
+
+        $editsByStatus = Edit::query()
+            ->whereHas('project', fn (Builder $query) => $query->where('company_id', $company->id))
+            ->select('status', DB::raw('count(*) as aggregate'))
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
+        $recentEdits = Edit::query()
+            ->whereHas('project', fn (Builder $query) => $query->where('company_id', $company->id))
+            ->with('project:id,name,company_id')
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id')
+            ->limit(10)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Company details retrieved successfully.',
+            'data' => [
+                'company' => $company->attributesToArray(),
+                'client' => $company->client,
+                'statistics' => [
+                    'projects' => $company->projects->count(),
+                    'edits' => (int) $editsByStatus->sum(),
+                    'pending_edits' => (int) $editsByStatus->get('pending', 0),
+                    'completed_edits' => (int) $editsByStatus->get('done', 0),
+                ],
+                'projects' => $company->projects,
+                'recent_edits' => $recentEdits,
+            ],
         ]);
     }
 

@@ -15,14 +15,19 @@ class CompanyTest extends TestCase
     {
         $admin = $this->createAdminUser();
         $client = $this->createClient();
-        $this->createCompany($client);
+        $company = $this->createCompany($client);
+        $project = $this->createProject($company);
+        $this->createEdit($project);
 
         $response = $this->withToken($admin->createToken('auth_token')->plainTextToken)
             ->getJson('/api/companies');
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonCount(1, 'data');
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.projects_count', 1)
+            ->assertJsonPath('data.0.edits_count', 1)
+            ->assertJsonPath('data.0.client.name', $client->name);
     }
 
     public function test_admin_can_create_a_company(): void
@@ -63,6 +68,67 @@ class CompanyTest extends TestCase
             ->assertJsonPath('data.id', $company->id)
             ->assertJsonPath('data.name', $company->name)
             ->assertJsonPath('data.client.id', $client->id);
+    }
+
+    public function test_admin_can_retrieve_company_details_and_calculated_statistics(): void
+    {
+        $admin = $this->createAdminUser();
+        $client = $this->createClient();
+        $company = $this->createCompany($client);
+        $firstProject = $this->createProject($company);
+        $secondProject = $this->createProject($company, ['name' => 'Second project']);
+        $this->createEdit($firstProject);
+        $this->createEdit($firstProject, [
+            'title' => 'Completed edit',
+            'status' => 'done',
+        ]);
+        $this->createEdit($secondProject, [
+            'title' => 'Another pending edit',
+        ]);
+
+        $response = $this->withToken($admin->createToken('auth_token')->plainTextToken)
+            ->getJson('/api/companies/'.$company->id.'/details');
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.company.id', $company->id)
+            ->assertJsonPath('data.client.id', $client->id)
+            ->assertJsonPath('data.statistics.projects', 2)
+            ->assertJsonPath('data.statistics.edits', 3)
+            ->assertJsonPath('data.statistics.pending_edits', 2)
+            ->assertJsonPath('data.statistics.completed_edits', 1)
+            ->assertJsonCount(2, 'data.projects')
+            ->assertJsonPath('data.projects.0.edits_count', 2)
+            ->assertJsonPath('data.projects.0.pending_edits_count', 1)
+            ->assertJsonPath('data.projects.0.completed_edits_count', 1)
+            ->assertJsonPath('data.recent_edits.0.title', 'Another pending edit');
+    }
+
+    public function test_company_details_returns_empty_statistics_without_related_work(): void
+    {
+        $admin = $this->createAdminUser();
+        $company = $this->createCompany($this->createClient());
+
+        $this->withToken($admin->createToken('auth_token')->plainTextToken)
+            ->getJson('/api/companies/'.$company->id.'/details')
+            ->assertOk()
+            ->assertJsonPath('data.statistics.projects', 0)
+            ->assertJsonPath('data.statistics.edits', 0)
+            ->assertJsonPath('data.statistics.pending_edits', 0)
+            ->assertJsonPath('data.statistics.completed_edits', 0)
+            ->assertJsonCount(0, 'data.projects')
+            ->assertJsonCount(0, 'data.recent_edits');
+    }
+
+    public function test_requesting_details_for_a_missing_company_returns_not_found(): void
+    {
+        $admin = $this->createAdminUser();
+
+        $this->withToken($admin->createToken('auth_token')->plainTextToken)
+            ->getJson('/api/companies/999999/details')
+            ->assertNotFound()
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Company not found.');
     }
 
     public function test_admin_can_update_a_company(): void
@@ -152,6 +218,10 @@ class CompanyTest extends TestCase
             ->assertStatus(401)
             ->assertJsonPath('success', false);
 
+        $this->getJson('/api/companies/1/details')
+            ->assertStatus(401)
+            ->assertJsonPath('success', false);
+
         $this->putJson('/api/companies/1', [])
             ->assertStatus(401)
             ->assertJsonPath('success', false);
@@ -193,6 +263,12 @@ class CompanyTest extends TestCase
 
         $this->withToken($token)
             ->getJson('/api/companies/'.$company->id)
+            ->assertStatus(403)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Forbidden. Administrator access is required.');
+
+        $this->withToken($token)
+            ->getJson('/api/companies/'.$company->id.'/details')
             ->assertStatus(403)
             ->assertJsonPath('success', false)
             ->assertJsonPath('message', 'Forbidden. Administrator access is required.');

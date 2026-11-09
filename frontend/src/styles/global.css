@@ -2372,7 +2372,8 @@ input:focus-visible {
 }
 
 .client-form-field input,
-.client-form-field textarea {
+.client-form-field textarea,
+.client-form-field select {
   font-size: 13px;
 }
 
@@ -2503,7 +2504,8 @@ input:focus-visible {
 }
 
 .client-form-field input,
-.client-form-field textarea {
+.client-form-field textarea,
+.client-form-field select {
   display: block;
   width: 100%;
   min-width: 0;
@@ -2514,26 +2516,31 @@ input:focus-visible {
   background: #ffffff;
   color: #111111;
   font-size: 11px;
+  font-family: inherit;
   resize: vertical;
 }
 
-.client-form-field input {
+.client-form-field input,
+.client-form-field select {
   height: 41px;
 }
 
 .client-form-field input:focus,
-.client-form-field textarea:focus {
+.client-form-field textarea:focus,
+.client-form-field select:focus {
   border-color: #4a644d;
   box-shadow: 0 0 0 3px rgb(74 100 77 / 9%);
 }
 
 .client-form-field input[aria-invalid='true'],
-.client-form-field textarea[aria-invalid='true'] {
+.client-form-field textarea[aria-invalid='true'],
+.client-form-field select[aria-invalid='true'] {
   border-color: #c54d3f;
 }
 
 .client-form-field input:disabled,
-.client-form-field textarea:disabled {
+.client-form-field textarea:disabled,
+.client-form-field select:disabled {
   background: #f6f7f5;
   cursor: wait;
 }
@@ -2710,5 +2717,136 @@ input:focus-visible {
 
   .client-modal-actions .client-button {
     flex: 1;
+  }
+}
+
+.companies-toolbar {
+  flex-wrap: wrap;
+}
+
+.companies-filters {
+  display: flex;
+  min-width: min(100%, 520px);
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.company-client-filter {
+  display: flex;
+  width: min(100%, 205px);
+  min-width: 0;
+  height: 39px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #818a83;
+}
+
+.company-client-filter:focus-within {
+  border-color: #4a644d;
+  box-shadow: 0 0 0 3px rgb(74 100 77 / 9%);
+}
+
+.company-client-filter select {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #515151;
+  font: inherit;
+  font-size: 11px;
+}
+
+.companies-table {
+  min-width: 760px;
+}
+
+.client-contact-summary a,
+.client-information-grid dd a {
+  color: #4a644d;
+  font-weight: 800;
+  text-decoration-color: #c6d1c6;
+  text-underline-offset: 3px;
+}
+
+.client-contact-summary a:hover,
+.client-information-grid dd a:hover {
+  color: #de6d20;
+}
+
+.company-project-row {
+  flex-wrap: wrap;
+}
+
+.company-project-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.company-project-metrics > span {
+  padding: 6px 8px;
+  border: 1px solid #e8e9e5;
+  border-radius: 7px;
+  background: #fafbf9;
+  color: #737d75;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.company-project-metrics > span strong {
+  color: #102716;
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .company-statistics .client-stat-card:last-child {
+    grid-column: auto;
+  }
+
+  .companies-filters {
+    min-width: 0;
+    justify-content: stretch;
+  }
+
+  .companies-filters .clients-search {
+    flex: 1;
+  }
+
+  .company-client-filter {
+    width: min(42%, 205px);
+    flex: 0 0 auto;
+  }
+
+  .company-project-metrics {
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 47px;
+  }
+}
+
+@media (max-width: 520px) {
+  .companies-filters {
+    flex-direction: column;
+  }
+
+  .company-client-filter {
+    width: 100%;
+  }
+
+  .company-project-metrics {
+    gap: 5px;
+    margin-left: 0;
+  }
+
+  .company-project-metrics > span {
+    font-size: 9px;
   }
 }

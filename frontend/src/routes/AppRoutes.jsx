@@ -6,6 +6,8 @@ import AuthenticatedLayout from '../layouts/AuthenticatedLayout.jsx'
 import AccountPage from '../pages/AccountPage.jsx'
 import ClientDetailsPage from '../pages/ClientDetailsPage.jsx'
 import ClientsPage from '../pages/ClientsPage.jsx'
+import CompanyDetailsPage from '../pages/CompanyDetailsPage.jsx'
+import CompaniesPage from '../pages/CompaniesPage.jsx'
 import DashboardPage from '../pages/DashboardPage.jsx'
 import LoginPage from '../pages/LoginPage.jsx'
 import SectionPlaceholderPage from '../pages/SectionPlaceholderPage.jsx'
@@ -34,7 +36,8 @@ function AppRoutes() {
         <Route path="/account" element={<AccountPage />} />
         <Route path="/clients" element={<ClientsPage />} />
         <Route path="/clients/:id" element={<ClientDetailsPage />} />
-        <Route path="/companies" element={<SectionPlaceholderPage title="Companies" />} />
+        <Route path="/companies" element={<CompaniesPage />} />
+        <Route path="/companies/:id" element={<CompanyDetailsPage />} />
         <Route path="/projects" element={<SectionPlaceholderPage title="Projects" />} />
         <Route path="/edits" element={<SectionPlaceholderPage title="Edits" />} />
       </Route>
