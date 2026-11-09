@@ -16,6 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('admin')->group(function () {
         Route::get('/admin/me', [AdminController::class, 'me']);
+        Route::put('/admin/password', [AuthController::class, 'updatePassword']);
 
         Route::get('/clients', [ClientController::class, 'index']);
         Route::post('/clients', [ClientController::class, 'store']);

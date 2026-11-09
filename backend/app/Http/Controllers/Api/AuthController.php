@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateAdminPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -13,6 +14,25 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
+    /**
+     * Update the authenticated administrator's password.
+     */
+    public function updatePassword(UpdateAdminPasswordRequest $request): JsonResponse
+    {
+        $request->user()->forceFill([
+            'password' => Hash::make($request->validated('new_password')),
+        ])->save();
+
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password updated successfully.',
+        ]);
+    }
+
     /**
      * Authenticate an administrator using the SPA session.
      */
