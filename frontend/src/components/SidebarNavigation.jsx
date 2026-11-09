@@ -52,14 +52,13 @@ function SidebarNavigation({ isOpen, isSigningOut, onClose, onLogout, user }) {
           {navigationItems.map(({ label, path, icon }) => (
             <NavLink
               className={({ isActive }) => `sidebar-link${isActive ? ' is-active' : ''}`}
-              end
+              end={path !== '/clients'}
               key={path}
               onClick={onClose}
               to={path}
             >
               <i className={`bi ${icon}`} aria-hidden="true" />
               <span>{label}</span>
-              <i className="bi bi-chevron-right sidebar-link-arrow" aria-hidden="true" />
             </NavLink>
           ))}
         </nav>
@@ -84,7 +83,7 @@ function SidebarNavigation({ isOpen, isSigningOut, onClose, onLogout, user }) {
             title="Sign out"
             type="button"
           >
-            <i className={`bi ${isSigningOut ? 'bi-arrow-repeat' : 'bi-box-arrow-right'}`} aria-hidden="true" />
+            <i className={`bi ${isSigningOut ? 'bi-hourglass-split' : 'bi-door-open'}`} aria-hidden="true" />
           </button>
         </div>
       </aside>

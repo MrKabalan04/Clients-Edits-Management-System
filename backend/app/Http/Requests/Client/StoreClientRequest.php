@@ -27,6 +27,8 @@ class StoreClientRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
+            'address' => ['nullable', 'string', 'max:10000'],
+            'notes' => ['nullable', 'string', 'max:10000'],
             'last_follow_up_date' => ['nullable', 'date_format:Y-m-d'],
         ];
     }

@@ -21,6 +21,8 @@ trait CreatesHierarchy
             'name' => 'Acme Client',
             'phone' => '+961 1 234 567',
             'email' => 'client@example.com',
+            'address' => '123 Example Street',
+            'notes' => null,
             'last_follow_up_date' => '2026-11-01',
         ], $attributes));
     }

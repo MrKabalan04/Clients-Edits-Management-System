@@ -70,7 +70,7 @@ class DatabaseSchemaTest extends TestCase
         $columns = $this->columns('clients');
 
         $this->assertSame(
-            ['id', 'name', 'phone', 'email', 'last_follow_up_date', 'created_at', 'updated_at'],
+            ['id', 'name', 'phone', 'email', 'address', 'notes', 'last_follow_up_date', 'created_at', 'updated_at'],
             array_keys($columns)
         );
 
@@ -85,6 +85,12 @@ class DatabaseSchemaTest extends TestCase
         $this->assertSame('varchar', $columns['email']->data_type);
         $this->assertSame(255, (int) $columns['email']->character_maximum_length);
         $this->assertSame('YES', $columns['email']->is_nullable);
+
+        $this->assertSame('text', $columns['address']->data_type);
+        $this->assertSame('YES', $columns['address']->is_nullable);
+
+        $this->assertSame('text', $columns['notes']->data_type);
+        $this->assertSame('YES', $columns['notes']->is_nullable);
 
         $this->assertSame('date', $columns['last_follow_up_date']->data_type);
         $this->assertSame('YES', $columns['last_follow_up_date']->is_nullable);

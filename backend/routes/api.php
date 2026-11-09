@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/clients', [ClientController::class, 'index']);
         Route::post('/clients', [ClientController::class, 'store']);
+        Route::get('/clients/{client}/details', [ClientController::class, 'details']);
         Route::get('/clients/{client}', [ClientController::class, 'show']);
         Route::put('/clients/{client}', [ClientController::class, 'update']);
         Route::patch('/clients/{client}', [ClientController::class, 'update']);

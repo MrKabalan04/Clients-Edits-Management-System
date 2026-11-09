@@ -252,6 +252,11 @@ class AttachmentTest extends TestCase
 
         $this->getJson('/api/edits/'.$edit->id.'/attachments')->assertUnauthorized();
         $this->getJson('/api/attachments/999999')->assertUnauthorized();
+
+        $this->get('/api/attachments/999999')
+            ->assertUnauthorized()
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Unauthenticated.');
     }
 
     public function test_non_admin_cannot_access_attachment_endpoints(): void

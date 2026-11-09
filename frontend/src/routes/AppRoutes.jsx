@@ -4,6 +4,8 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import AuthenticatedLayout from '../layouts/AuthenticatedLayout.jsx'
 import AccountPage from '../pages/AccountPage.jsx'
+import ClientDetailsPage from '../pages/ClientDetailsPage.jsx'
+import ClientsPage from '../pages/ClientsPage.jsx'
 import DashboardPage from '../pages/DashboardPage.jsx'
 import LoginPage from '../pages/LoginPage.jsx'
 import SectionPlaceholderPage from '../pages/SectionPlaceholderPage.jsx'
@@ -30,7 +32,8 @@ function AppRoutes() {
       <Route element={<ProtectedAdminArea />}>
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/account" element={<AccountPage />} />
-        <Route path="/clients" element={<SectionPlaceholderPage title="Clients" />} />
+        <Route path="/clients" element={<ClientsPage />} />
+        <Route path="/clients/:id" element={<ClientDetailsPage />} />
         <Route path="/companies" element={<SectionPlaceholderPage title="Companies" />} />
         <Route path="/projects" element={<SectionPlaceholderPage title="Projects" />} />
         <Route path="/edits" element={<SectionPlaceholderPage title="Edits" />} />
