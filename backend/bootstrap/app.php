@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -38,9 +39,17 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(function (NotFoundHttpException $exception, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
+                $previous = $exception->getPrevious();
+
+                if ($previous instanceof ModelNotFoundException) {
+                    $message = class_basename($previous->getModel()).' not found.';
+                } else {
+                    $message = 'Resource not found.';
+                }
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Client not found.',
+                    'message' => $message,
                 ], 404);
             }
 
