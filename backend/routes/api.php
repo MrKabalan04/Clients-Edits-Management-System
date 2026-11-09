@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\CompanyController;
+use App\Http\Controllers\Api\ProjectController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -27,5 +28,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/companies/{company}', [CompanyController::class, 'update']);
         Route::patch('/companies/{company}', [CompanyController::class, 'update']);
         Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
+
+        Route::get('/projects', [ProjectController::class, 'index']);
+        Route::post('/projects', [ProjectController::class, 'store']);
+        Route::get('/projects/{project}', [ProjectController::class, 'show']);
+        Route::put('/projects/{project}', [ProjectController::class, 'update']);
+        Route::patch('/projects/{project}', [ProjectController::class, 'update']);
+        Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
     });
 });
