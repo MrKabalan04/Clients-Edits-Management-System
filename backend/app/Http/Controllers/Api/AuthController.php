@@ -7,15 +7,24 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
     /**
-     * Authenticate an administrator and issue a personal access token.
+     * Authenticate an administrator using the SPA session.
      */
     public function login(LoginRequest $request): JsonResponse
     {
+        if (! $request->hasSession()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'A stateful browser session is required.',
+            ], 419);
+        }
+
         $credentials = $request->validated();
 
         $user = User::query()
@@ -36,12 +45,12 @@ class AuthController extends Controller
             ], 403);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        Auth::guard('web')->login($user);
+        $request->session()->regenerate();
 
         return response()->json([
             'success' => true,
             'message' => 'Login successful.',
-            'token' => $token,
             'user' => [
                 'id' => $user->getKey(),
                 'name' => $user->name,
@@ -52,11 +61,22 @@ class AuthController extends Controller
     }
 
     /**
-     * Revoke only the access token used for the current request.
+     * Invalidate the authenticated SPA session.
      */
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $accessToken = $request->user()?->currentAccessToken();
+
+        if ($accessToken instanceof PersonalAccessToken) {
+            $accessToken->delete();
+        }
+
+        Auth::guard('web')->logout();
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return response()->json([
             'success' => true,

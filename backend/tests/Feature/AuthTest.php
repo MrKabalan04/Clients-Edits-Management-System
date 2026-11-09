@@ -10,74 +10,72 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_admin_can_login_and_receive_a_token(): void
+    public function test_admin_can_login_with_a_stateful_session_cookie(): void
     {
         $user = $this->createAdminUser();
 
-        $response = $this->postJson('/api/login', [
+        $response = $this->spaRequest()->postJson('/api/login', [
             'email' => $user->email,
             'password' => 'admin-password',
         ]);
 
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'success',
-                'message',
-                'token',
-                'user' => [
-                    'id',
-                    'name',
-                    'email',
-                    'role',
-                ],
-            ]);
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Login successful.')
+            ->assertJsonPath('user.id', $user->id)
+            ->assertJsonPath('user.role', 'admin')
+            ->assertJsonMissingPath('token');
 
-        $response->assertJsonPath('success', true);
-        $response->assertJsonPath('message', 'Login successful.');
-        $response->assertJsonPath('user.id', $user->id);
-        $response->assertJsonPath('user.name', $user->name);
-        $response->assertJsonPath('user.email', $user->email);
-        $response->assertJsonPath('user.role', 'admin');
-        $this->assertNotEmpty($response->json('token'));
+        $sessionCookie = $response->getCookie(config('session.cookie'), false);
 
-        $this->assertDatabaseHas('personal_access_tokens', [
-            'tokenable_id' => $user->id,
-            'tokenable_type' => User::class,
-        ]);
+        $this->assertNotNull($sessionCookie);
+        $this->assertTrue($sessionCookie->isHttpOnly());
+        $this->assertSame('lax', $sessionCookie->getSameSite());
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+
+        $csrfCookie = $response->getCookie('XSRF-TOKEN', false);
+        $this->assertNotNull($csrfCookie);
+        $this->assertFalse($csrfCookie->isHttpOnly());
     }
 
     public function test_login_with_incorrect_password_returns_unauthorized_response(): void
     {
         $this->createAdminUser();
 
-        $response = $this->postJson('/api/login', [
+        $this->spaRequest()->postJson('/api/login', [
             'email' => 'admin@example.com',
             'password' => 'wrong-password',
-        ]);
-
-        $response->assertStatus(401)
+        ])->assertUnauthorized()
             ->assertJsonPath('success', false)
             ->assertJsonPath('message', 'Invalid credentials.');
     }
 
     public function test_login_with_unknown_email_returns_unauthorized_response(): void
     {
-        $response = $this->postJson('/api/login', [
+        $this->spaRequest()->postJson('/api/login', [
             'email' => 'unknown@example.com',
             'password' => 'password',
-        ]);
-
-        $response->assertStatus(401)
+        ])->assertUnauthorized()
             ->assertJsonPath('success', false)
             ->assertJsonPath('message', 'Invalid credentials.');
     }
 
     public function test_login_validation_fails_returns_unprocessable_entity(): void
     {
-        $response = $this->postJson('/api/login', []);
-
-        $response->assertStatus(422)
+        $this->spaRequest()->postJson('/api/login', [])
+            ->assertUnprocessable()
             ->assertJsonValidationErrors(['email', 'password']);
+    }
+
+    public function test_login_requires_a_stateful_browser_session(): void
+    {
+        $user = $this->createAdminUser();
+
+        $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'admin-password',
+        ])->assertStatus(419)
+            ->assertJsonPath('success', false);
     }
 
     public function test_non_admin_user_cannot_login(): void
@@ -89,74 +87,73 @@ class AuthTest extends TestCase
             'role' => 'manager',
         ]);
 
-        $response = $this->postJson('/api/login', [
+        $this->spaRequest()->postJson('/api/login', [
             'email' => $user->email,
             'password' => 'manager-password',
-        ]);
-
-        $response->assertStatus(403)
+        ])->assertForbidden()
             ->assertJsonPath('success', false);
     }
 
-    public function test_admin_route_without_token_returns_unauthorized(): void
-    {
-        $this->getJson('/api/admin/me')
-            ->assertStatus(401)
-            ->assertJsonPath('success', false);
-    }
-
-    public function test_admin_can_access_protected_admin_route_with_valid_token(): void
+    public function test_authenticated_admin_can_access_admin_me_using_the_session_cookie(): void
     {
         $user = $this->createAdminUser();
 
-        $loginResponse = $this->postJson('/api/login', [
+        $loginResponse = $this->spaRequest()->postJson('/api/login', [
             'email' => $user->email,
             'password' => 'admin-password',
         ]);
+        $loginResponse->assertOk();
 
-        $loginResponse->assertStatus(200);
+        $this->app['auth']->forgetGuards();
+        $sessionCookie = $loginResponse->getCookie(config('session.cookie'), false);
 
-        $response = $this->withToken($loginResponse->json('token'))
-            ->getJson('/api/admin/me');
-
-        $response->assertStatus(200)
+        $this->withHeader('Origin', 'http://localhost:5173')
+            ->withCookie($sessionCookie->getName(), $sessionCookie->getValue())
+            ->getJson('/api/admin/me')
+            ->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonPath('user.id', $user->id)
             ->assertJsonPath('user.email', $user->email)
             ->assertJsonPath('user.role', 'admin');
     }
 
-    public function test_logout_revokes_the_current_token(): void
+    public function test_logout_invalidates_the_server_session(): void
     {
         $user = $this->createAdminUser();
 
-        $loginResponse = $this->postJson('/api/login', [
+        $loginResponse = $this->spaRequest()->postJson('/api/login', [
             'email' => $user->email,
             'password' => 'admin-password',
         ]);
-
-        $loginResponse->assertStatus(200);
-        $token = $loginResponse->json('token');
-
-        $logoutResponse = $this->withToken($token)->postJson('/api/logout');
-
-        $logoutResponse->assertStatus(200)
-            ->assertJsonPath('success', true);
-
-        $this->assertDatabaseMissing('personal_access_tokens', [
-            'tokenable_id' => $user->id,
-            'tokenable_type' => User::class,
-            'token' => $token,
-        ]);
+        $loginResponse->assertOk();
+        $sessionCookie = $loginResponse->getCookie(config('session.cookie'), false);
 
         $this->app['auth']->forgetGuards();
+        $logoutResponse = $this->withHeader('Origin', 'http://localhost:5173')
+            ->withCookie($sessionCookie->getName(), $sessionCookie->getValue())
+            ->postJson('/api/logout');
 
-        $this->withToken($token)
+        $logoutResponse->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Logged out successfully.');
+
+        $this->app['auth']->forgetGuards();
+        $logoutCookie = $logoutResponse->getCookie(config('session.cookie'), false);
+
+        $this->withHeader('Origin', 'http://localhost:5173')
+            ->withCookie($logoutCookie->getName(), $logoutCookie->getValue())
             ->getJson('/api/admin/me')
-            ->assertStatus(401);
+            ->assertUnauthorized();
     }
 
-    public function test_authenticated_non_admin_user_receives_403_from_admin_route(): void
+    public function test_admin_route_without_a_session_returns_unauthorized(): void
+    {
+        $this->spaRequest()->getJson('/api/admin/me')
+            ->assertUnauthorized()
+            ->assertJsonPath('success', false);
+    }
+
+    public function test_authenticated_non_admin_user_receives_forbidden_from_admin_route(): void
     {
         $user = User::query()->create([
             'name' => 'Content Manager',
@@ -165,12 +162,51 @@ class AuthTest extends TestCase
             'role' => 'manager',
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        $this->withToken($token)
+        $this->actingAs($user, 'web')
             ->getJson('/api/admin/me')
-            ->assertStatus(403)
+            ->assertForbidden()
             ->assertJsonPath('success', false);
+    }
+
+    public function test_csrf_cookie_endpoint_sets_the_xsrf_cookie(): void
+    {
+        $response = $this->withHeader('Origin', 'http://localhost:5173')
+            ->get('/sanctum/csrf-cookie');
+
+        $response->assertNoContent();
+
+        $csrfCookie = $response->getCookie('XSRF-TOKEN', false);
+        $this->assertNotNull($csrfCookie);
+        $this->assertFalse($csrfCookie->isHttpOnly());
+    }
+
+    public function test_session_cookie_honors_the_secure_cookie_setting(): void
+    {
+        config(['session.secure' => true]);
+
+        $response = $this->get('/sanctum/csrf-cookie');
+        $sessionCookie = $response->getCookie(config('session.cookie'), false);
+
+        $this->assertNotNull($sessionCookie);
+        $this->assertTrue($sessionCookie->isSecure());
+        $this->assertTrue($sessionCookie->isHttpOnly());
+    }
+
+    public function test_stateful_cors_allows_configured_frontend_credentials(): void
+    {
+        $this->withHeaders([
+            'Origin' => 'http://localhost:5173',
+            'Access-Control-Request-Method' => 'POST',
+            'Access-Control-Request-Headers' => 'content-type,x-xsrf-token',
+        ])->options('/api/login')
+            ->assertNoContent()
+            ->assertHeader('Access-Control-Allow-Origin', 'http://localhost:5173')
+            ->assertHeader('Access-Control-Allow-Credentials', 'true');
+    }
+
+    private function spaRequest(): static
+    {
+        return $this->withHeader('Origin', 'http://localhost:5173');
     }
 
     private function createAdminUser(): User
