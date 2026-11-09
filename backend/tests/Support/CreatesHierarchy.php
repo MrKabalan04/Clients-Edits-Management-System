@@ -71,7 +71,9 @@ trait CreatesHierarchy
     {
         return Attachment::query()->create(array_merge([
             'file_name' => 'brief.pdf',
-            'file_path' => 'attachments/brief.pdf',
+            'file_data' => 'YmVjbGFkZXYtYnJlZCk=',
+            'mime_type' => 'application/pdf',
+            'file_size' => 1024,
             'description' => 'Client brief.',
             'edit_id' => $edit->getKey(),
         ], $attributes));

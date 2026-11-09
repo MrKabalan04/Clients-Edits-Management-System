@@ -169,7 +169,7 @@ class DatabaseSchemaTest extends TestCase
         $columns = $this->columns('attachments');
 
         $this->assertSame(
-            ['id', 'file_name', 'file_path', 'description', 'edit_id', 'created_at', 'updated_at'],
+            ['id', 'file_name', 'file_data', 'mime_type', 'file_size', 'description', 'edit_id', 'created_at', 'updated_at'],
             array_keys($columns)
         );
 
@@ -177,9 +177,15 @@ class DatabaseSchemaTest extends TestCase
         $this->assertSame(255, (int) $columns['file_name']->character_maximum_length);
         $this->assertSame('NO', $columns['file_name']->is_nullable);
 
-        $this->assertSame('varchar', $columns['file_path']->data_type);
-        $this->assertSame(500, (int) $columns['file_path']->character_maximum_length);
-        $this->assertSame('NO', $columns['file_path']->is_nullable);
+        $this->assertSame('longtext', $columns['file_data']->data_type);
+        $this->assertSame('NO', $columns['file_data']->is_nullable);
+
+        $this->assertSame('varchar', $columns['mime_type']->data_type);
+        $this->assertSame(255, (int) $columns['mime_type']->character_maximum_length);
+        $this->assertSame('NO', $columns['mime_type']->is_nullable);
+
+        $this->assertSame('bigint', $columns['file_size']->data_type);
+        $this->assertSame('NO', $columns['file_size']->is_nullable);
 
         $this->assertSame('text', $columns['description']->data_type);
         $this->assertSame('YES', $columns['description']->is_nullable);

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\AttachmentController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\CompanyController;
@@ -43,5 +44,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/edits/{edit}', [EditController::class, 'update']);
         Route::patch('/edits/{edit}', [EditController::class, 'update']);
         Route::delete('/edits/{edit}', [EditController::class, 'destroy']);
+
+        Route::post('/edits/{edit}/attachments', [AttachmentController::class, 'store']);
+        Route::get('/edits/{edit}/attachments', [AttachmentController::class, 'index']);
+
+        Route::get('/attachments/{attachment}', [AttachmentController::class, 'show']);
+        Route::delete('/attachments/{attachment}', [AttachmentController::class, 'destroy']);
     });
 });
