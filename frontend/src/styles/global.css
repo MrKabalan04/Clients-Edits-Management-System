@@ -3195,3 +3195,452 @@ input:focus-visible {
     justify-content: flex-start;
   }
 }
+
+.edits-toolbar {
+  flex-wrap: wrap;
+}
+
+.edits-filters {
+  display: grid;
+  min-width: min(100%, 850px);
+  flex: 1;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.edits-filters .clients-search {
+  width: 100%;
+  grid-column: span 2;
+}
+
+.edit-filter-select {
+  display: flex;
+  min-width: 0;
+  height: 39px;
+  align-items: center;
+  padding: 0 9px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.edit-filter-select:focus-within {
+  border-color: #4a644d;
+  box-shadow: 0 0 0 3px rgb(74 100 77 / 9%);
+}
+
+.edit-filter-select select {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #515151;
+  font: inherit;
+  font-size: 11px;
+}
+
+.edits-clear-filters {
+  justify-self: start;
+  padding: 0 5px;
+  border: 0;
+  background: transparent;
+  color: #4a644d;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.edits-clear-filters:hover {
+  color: #de6d20;
+}
+
+.edits-table {
+  min-width: 1660px;
+}
+
+.edit-directory-title {
+  display: block;
+  max-width: 210px;
+  overflow: hidden;
+  color: #102716;
+  text-overflow: ellipsis;
+}
+
+.edit-directory-title strong {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.edits-table .edit-status-badge,
+.edits-table .edit-priority-badge {
+  white-space: nowrap;
+}
+
+.edit-payment {
+  color: #a76b13;
+}
+
+.edit-payment.is-paid {
+  color: #386e43;
+}
+
+.edit-profile-header {
+  align-items: flex-start;
+}
+
+.edit-profile-avatar {
+  background: #fff3e9;
+  color: #de6d20;
+}
+
+.edit-profile-copy {
+  min-width: 0;
+}
+
+.edit-profile-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin: 11px 0;
+}
+
+.edit-related-links {
+  row-gap: 8px;
+}
+
+.edit-information-section .client-information-grid dd {
+  display: flex;
+  min-height: 25px;
+  align-items: center;
+  gap: 6px;
+}
+
+.edit-information-section .client-information-grid .is-wide dd {
+  display: block;
+}
+
+.edit-description-value {
+  color: #515151 !important;
+  font-weight: 500 !important;
+  white-space: pre-wrap;
+}
+
+.edit-form-modal {
+  width: min(100%, 740px);
+}
+
+.edit-project-select-label {
+  margin-top: 12px !important;
+}
+
+.edit-attachments-section {
+  min-width: 0;
+}
+
+.edit-attachment-upload {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 11px;
+  margin: 0 0 15px;
+  padding: 14px;
+  border: 1px dashed #dfe4de;
+  border-radius: 9px;
+  background: #fafbf9;
+}
+
+.edit-file-picker {
+  position: relative;
+  display: inline-flex;
+  min-height: 39px;
+  flex: 0 0 auto;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid #dfe3dd;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #102716;
+  cursor: pointer;
+}
+
+.edit-file-picker span {
+  display: inline-flex;
+  height: 100%;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.edit-file-picker:focus-within {
+  outline: 3px solid rgb(74 100 77 / 15%);
+}
+
+.edit-file-picker input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.edit-file-picker input:disabled {
+  cursor: wait;
+}
+
+.edit-upload-selection {
+  min-width: 0;
+  flex: 1 1 250px;
+  align-self: center;
+  color: #737d75;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.edit-upload-selection ul {
+  display: grid;
+  max-height: 100px;
+  gap: 4px;
+  overflow: auto;
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edit-upload-selection li {
+  overflow-wrap: anywhere;
+  color: #515151;
+}
+
+.edit-clear-selection {
+  padding: 2px 0;
+  border: 0;
+  background: transparent;
+  color: #4a644d;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.edit-clear-selection:hover {
+  color: #de6d20;
+}
+
+.edit-attachment-upload > .client-button {
+  min-height: 39px;
+}
+
+.edit-attachment-upload .login-spinner {
+  width: 14px;
+  height: 14px;
+  border-color: rgb(255 255 255 / 40%);
+  border-top-color: #ffffff;
+}
+
+.edit-attachments-list {
+  display: grid;
+  gap: 9px;
+}
+
+.edit-attachment-card {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 90px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  padding: 11px;
+  border: 1px solid #edf0ec;
+  border-radius: 9px;
+  background: #ffffff;
+}
+
+.edit-attachment-preview,
+.edit-attachment-file-icon {
+  display: grid;
+  width: 90px;
+  height: 70px;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 7px;
+  background: #f3f5f2;
+  color: #4a644d;
+}
+
+.edit-attachment-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.edit-attachment-preview > span {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  color: #737d75;
+  font-size: 9px;
+}
+
+.edit-attachment-preview > span i,
+.edit-attachment-file-icon i {
+  font-size: 22px;
+}
+
+.edit-attachment-info {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.edit-attachment-info > strong {
+  overflow: hidden;
+  color: #102716;
+  font-size: 12px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edit-attachment-info > span,
+.edit-attachment-info > small {
+  overflow-wrap: anywhere;
+  color: #737d75;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.edit-attachment-info > small {
+  color: #515151;
+  white-space: pre-wrap;
+}
+
+.edit-attachment-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.edit-attachment-actions .client-button {
+  min-height: 34px;
+  padding: 0 9px;
+  font-size: 10px;
+}
+
+.edit-attachment-actions .client-icon-button {
+  width: 34px;
+  height: 34px;
+}
+
+.edit-attachment-error {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #93362c;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1000px) {
+  .edits-filters {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .edits-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .edits-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .edits-filters .clients-search {
+    grid-column: 1 / -1;
+  }
+
+  .edit-profile-header {
+    align-items: flex-start;
+  }
+
+  .edit-profile-badges {
+    gap: 8px 12px;
+  }
+
+  .edit-attachment-card {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .edit-attachment-preview,
+  .edit-attachment-file-icon {
+    width: 76px;
+    height: 64px;
+  }
+
+  .edit-attachment-actions {
+    grid-column: 2;
+  }
+
+  .edit-attachment-error {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .edits-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .edits-filters .clients-search {
+    grid-column: auto;
+  }
+
+  .edit-attachment-upload {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .edit-file-picker {
+    align-self: flex-start;
+  }
+
+  .edit-upload-selection {
+    flex: auto;
+  }
+
+  .edit-attachment-upload > .client-button {
+    width: 100%;
+  }
+
+  .edit-attachment-card {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 9px;
+    padding: 9px;
+  }
+
+  .edit-attachment-preview,
+  .edit-attachment-file-icon {
+    width: 64px;
+    height: 58px;
+  }
+
+  .edit-attachment-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+
+  .edit-attachment-info > strong {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .edit-related-links {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -82,6 +82,22 @@ class AttachmentTest extends TestCase
         $this->assertDatabaseCount('attachments', 2);
     }
 
+    public function test_uploads_are_limited_to_twenty_files_per_request(): void
+    {
+        $edit = $this->createEditForAttachments();
+        $files = array_map(
+            fn (int $index) => File::createWithContent("file-{$index}.txt", 'small text file'),
+            range(1, 21),
+        );
+
+        $this->withToken($this->adminToken())
+            ->post('/api/edits/'.$edit->id.'/attachments', ['files' => $files])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['files']);
+
+        $this->assertDatabaseCount('attachments', 0);
+    }
+
     public function test_admin_can_upload_supported_word_excel_pdf_and_text_files(): void
     {
         $edit = $this->createEditForAttachments();

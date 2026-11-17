@@ -18,7 +18,10 @@ class EditController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => Edit::query()->with(['project.company.client'])->get(),
+            'data' => Edit::query()
+                ->with(['project.company.client'])
+                ->withCount('attachments')
+                ->get(),
         ]);
     }
 
@@ -32,7 +35,7 @@ class EditController extends Controller
 
         $edit = Edit::query()->create($validated);
 
-        $edit->load(['project.company.client']);
+        $edit->load(['project.company.client'])->loadCount('attachments');
 
         return response()->json([
             'success' => true,
@@ -46,7 +49,7 @@ class EditController extends Controller
      */
     public function show(Edit $edit): JsonResponse
     {
-        $edit->load(['project.company.client']);
+        $edit->load(['project.company.client'])->loadCount('attachments');
 
         return response()->json([
             'success' => true,
@@ -65,7 +68,7 @@ class EditController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Edit updated successfully.',
-            'data' => $edit->fresh()->load(['project.company.client']),
+            'data' => $edit->fresh()->load(['project.company.client'])->loadCount('attachments'),
         ]);
     }
 

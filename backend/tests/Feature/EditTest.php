@@ -17,14 +17,18 @@ class EditTest extends TestCase
         $client = $this->createClient();
         $company = $this->createCompany($client);
         $project = $this->createProject($company);
-        $this->createEdit($project);
+        $edit = $this->createEdit($project);
+        $this->createAttachment($edit);
 
         $response = $this->withToken($admin->createToken('auth_token')->plainTextToken)
             ->getJson('/api/edits');
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonCount(1, 'data');
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.attachments_count', 1);
+
+        $this->assertArrayNotHasKey('file_data', $response->json('data.0'));
     }
 
     public function test_admin_can_create_an_edit(): void
@@ -74,6 +78,7 @@ class EditTest extends TestCase
         $company = $this->createCompany($client);
         $project = $this->createProject($company);
         $edit = $this->createEdit($project);
+        $this->createAttachment($edit);
 
         $response = $this->withToken($admin->createToken('auth_token')->plainTextToken)
             ->getJson('/api/edits/'.$edit->id);
@@ -87,7 +92,10 @@ class EditTest extends TestCase
             ->assertJsonPath('data.status', 'pending')
             ->assertJsonPath('data.project.id', $project->id)
             ->assertJsonPath('data.project.company.id', $company->id)
-            ->assertJsonPath('data.project.company.client.id', $client->id);
+            ->assertJsonPath('data.project.company.client.id', $client->id)
+            ->assertJsonPath('data.attachments_count', 1);
+
+        $this->assertArrayNotHasKey('file_data', $response->json('data'));
     }
 
     public function test_admin_can_update_an_edit(): void
@@ -334,6 +342,31 @@ class EditTest extends TestCase
             ->assertJsonPath('success', false)
             ->assertJsonPath('message', 'Validation failed.')
             ->assertJsonValidationErrors(['project_id']);
+    }
+
+    public function test_edit_price_cannot_have_more_than_two_decimal_places(): void
+    {
+        $admin = $this->createAdminUser();
+        $company = $this->createCompany($this->createClient());
+        $project = $this->createProject($company);
+        $edit = $this->createEdit($project);
+        $token = $admin->createToken('auth_token')->plainTextToken;
+
+        $this->withToken($token)
+            ->postJson('/api/edits', [
+                'title' => 'Invalid precision',
+                'priority' => 'medium',
+                'status' => 'pending',
+                'price' => '12.345',
+                'project_id' => $project->id,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['price']);
+
+        $this->withToken($token)
+            ->patchJson('/api/edits/'.$edit->id, ['price' => '12.345'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['price']);
     }
 
     public function test_edit_cannot_be_created_with_a_nonexistent_project(): void

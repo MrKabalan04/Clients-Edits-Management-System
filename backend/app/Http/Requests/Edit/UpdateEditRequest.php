@@ -31,7 +31,7 @@ class UpdateEditRequest extends FormRequest
             'description' => ['sometimes', 'nullable', 'string'],
             'priority' => ['sometimes', 'required', Rule::enum(EditPriority::class)],
             'status' => ['sometimes', 'required', Rule::enum(EditStatus::class)],
-            'price' => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:99999999.99'],
+            'price' => ['sometimes', 'nullable', 'numeric', 'decimal:0,2', 'min:0', 'max:99999999.99'],
             'is_paid' => ['sometimes', 'boolean'],
             'due_date' => ['sometimes', 'nullable', 'date_format:Y-m-d'],
             'project_id' => ['sometimes', 'integer', 'exists:projects,id'],

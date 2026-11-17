@@ -31,7 +31,7 @@ class StoreEditRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'priority' => ['required', Rule::enum(EditPriority::class)],
             'status' => ['required', Rule::enum(EditStatus::class)],
-            'price' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
+            'price' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'max:99999999.99'],
             'is_paid' => ['sometimes', 'boolean'],
             'due_date' => ['nullable', 'date_format:Y-m-d'],
             'project_id' => ['required', 'integer', 'exists:projects,id'],

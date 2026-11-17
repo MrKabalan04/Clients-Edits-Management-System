@@ -20,7 +20,19 @@ class AttachmentController extends Controller
      */
     public function index(Edit $edit): JsonResponse
     {
-        $attachments = $edit->attachments()->orderBy('id')->get();
+        $attachments = $edit->attachments()
+            ->select([
+                'id',
+                'file_name',
+                'mime_type',
+                'file_size',
+                'description',
+                'edit_id',
+                'created_at',
+                'updated_at',
+            ])
+            ->orderBy('id')
+            ->get();
 
         return response()->json([
             'success' => true,

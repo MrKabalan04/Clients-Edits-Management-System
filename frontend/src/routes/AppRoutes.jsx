@@ -9,6 +9,8 @@ import ClientsPage from '../pages/ClientsPage.jsx'
 import CompanyDetailsPage from '../pages/CompanyDetailsPage.jsx'
 import CompaniesPage from '../pages/CompaniesPage.jsx'
 import DashboardPage from '../pages/DashboardPage.jsx'
+import EditDetailsPage from '../pages/EditDetailsPage.jsx'
+import EditsPage from '../pages/EditsPage.jsx'
 import LoginPage from '../pages/LoginPage.jsx'
 import ProjectDetailsPage from '../pages/ProjectDetailsPage.jsx'
 import ProjectsPage from '../pages/ProjectsPage.jsx'
@@ -42,7 +44,8 @@ function AppRoutes() {
         <Route path="/companies/:id" element={<CompanyDetailsPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
         <Route path="/projects/:id" element={<ProjectDetailsPage />} />
-        <Route path="/edits" element={<SectionPlaceholderPage title="Edits" />} />
+        <Route path="/edits" element={<EditsPage />} />
+        <Route path="/edits/:id" element={<EditDetailsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>

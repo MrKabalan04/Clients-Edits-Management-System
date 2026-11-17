@@ -47,7 +47,7 @@ class StoreAttachmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'files' => ['required', 'array', 'min:1'],
+            'files' => ['required', 'array', 'min:1', 'max:20'],
             'files.*' => [
                 'required',
                 'file',
