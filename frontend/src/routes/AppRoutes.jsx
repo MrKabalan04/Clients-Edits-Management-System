@@ -10,6 +10,8 @@ import CompanyDetailsPage from '../pages/CompanyDetailsPage.jsx'
 import CompaniesPage from '../pages/CompaniesPage.jsx'
 import DashboardPage from '../pages/DashboardPage.jsx'
 import LoginPage from '../pages/LoginPage.jsx'
+import ProjectDetailsPage from '../pages/ProjectDetailsPage.jsx'
+import ProjectsPage from '../pages/ProjectsPage.jsx'
 import SectionPlaceholderPage from '../pages/SectionPlaceholderPage.jsx'
 
 function ProtectedAdminArea() {
@@ -38,7 +40,8 @@ function AppRoutes() {
         <Route path="/clients/:id" element={<ClientDetailsPage />} />
         <Route path="/companies" element={<CompaniesPage />} />
         <Route path="/companies/:id" element={<CompanyDetailsPage />} />
-        <Route path="/projects" element={<SectionPlaceholderPage title="Projects" />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/projects/:id" element={<ProjectDetailsPage />} />
         <Route path="/edits" element={<SectionPlaceholderPage title="Edits" />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />

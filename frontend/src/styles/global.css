@@ -2850,3 +2850,348 @@ input:focus-visible {
     font-size: 9px;
   }
 }
+
+.projects-toolbar {
+  flex-wrap: wrap;
+}
+
+.projects-filters {
+  display: flex;
+  min-width: min(100%, 700px);
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.project-filter-select {
+  display: flex;
+  width: min(100%, 190px);
+  min-width: 0;
+  height: 39px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #818a83;
+}
+
+.project-filter-select:focus-within {
+  border-color: #4a644d;
+  box-shadow: 0 0 0 3px rgb(74 100 77 / 9%);
+}
+
+.project-filter-select select {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #515151;
+  font: inherit;
+  font-size: 11px;
+}
+
+.projects-table {
+  min-width: 1120px;
+}
+
+.project-row-icon {
+  background: #fff3e9;
+  color: #de6d20;
+}
+
+.project-count {
+  display: inline-grid;
+  min-width: 26px;
+  height: 24px;
+  place-items: center;
+  padding: 0 6px;
+  border-radius: 7px;
+  background: #f3f5f2;
+  color: #515151;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.project-count.is-pending {
+  background: #fff3e9;
+  color: #b95612;
+}
+
+.project-count.is-completed {
+  background: #edf5ef;
+  color: #386e43;
+}
+
+.client-form-field select {
+  resize: none;
+}
+
+.project-form-hint {
+  display: block;
+  margin: 6px 0 0 1px;
+  color: #858d87;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.project-financial-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 22px 0 0;
+}
+
+.project-financial-card {
+  display: flex;
+  min-width: 0;
+  min-height: 88px;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #e8e9e5;
+  border-radius: 11px;
+  background: #ffffff;
+}
+
+.project-financial-icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 11px;
+  background: #f0f3ef;
+  color: #4a644d;
+  font-size: 17px;
+}
+
+.project-financial-card > div {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.project-financial-card > div > span {
+  color: #737d75;
+  font-size: 11px;
+}
+
+.project-financial-card strong {
+  overflow-wrap: anywhere;
+  color: #102716;
+  font-size: clamp(17px, 2vw, 22px);
+  font-weight: 800;
+}
+
+.project-financial-card.is-paid .project-financial-icon {
+  background: #edf5ef;
+  color: #386e43;
+}
+
+.project-financial-card.is-outstanding .project-financial-icon {
+  background: #fff3e9;
+  color: #de6d20;
+}
+
+.project-financial-note {
+  margin: 8px 2px 0;
+  color: #858d87;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.project-workload-statistics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.client-stat-card.tone-blue .client-stat-icon {
+  background: #edf2fb;
+  color: #43618e;
+}
+
+.client-stat-card.tone-muted .client-stat-icon {
+  background: #f3f3f3;
+  color: #666666;
+}
+
+.project-related-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.project-related-card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #edf0ec;
+  border-radius: 9px;
+}
+
+.project-related-card > div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.project-related-card > div > span {
+  color: #858d87;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.project-related-card a {
+  overflow-wrap: anywhere;
+  color: #102716;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration-color: #c6d1c6;
+  text-underline-offset: 3px;
+}
+
+.project-related-card a:hover {
+  color: #de6d20;
+}
+
+.project-related-card small {
+  overflow-wrap: anywhere;
+  color: #737d75;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.project-edits-heading {
+  align-items: flex-end;
+}
+
+.project-edit-filters {
+  display: flex;
+  gap: 8px;
+}
+
+.project-edit-filters select {
+  min-width: 130px;
+  height: 36px;
+  padding: 0 9px;
+  border: 1px solid #e5e5e5;
+  border-radius: 7px;
+  outline: 0;
+  background: #ffffff;
+  color: #515151;
+  font: inherit;
+  font-size: 11px;
+}
+
+.project-edit-filters select:focus {
+  border-color: #4a644d;
+  box-shadow: 0 0 0 3px rgb(74 100 77 / 9%);
+}
+
+.project-edit-description {
+  margin: 0;
+  color: #515151;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.project-edit-card .client-edit-title {
+  flex: 1;
+}
+
+.project-edit-card .client-edit-meta > span:last-child {
+  color: #4a644d;
+}
+
+@media (max-width: 900px) {
+  .projects-filters {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .projects-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .projects-filters {
+    flex-wrap: wrap;
+    justify-content: stretch;
+  }
+
+  .projects-filters .clients-search {
+    flex: 1 1 100%;
+  }
+
+  .project-filter-select {
+    flex: 1 1 0;
+    width: auto;
+  }
+
+  .project-financial-cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .project-financial-card {
+    min-height: 72px;
+  }
+
+  .project-workload-statistics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .project-workload-statistics .client-stat-card:last-child {
+    grid-column: auto;
+  }
+
+  .project-related-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .project-edits-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 520px) {
+  .projects-filters {
+    flex-direction: column;
+  }
+
+  .projects-filters .clients-search,
+  .project-filter-select {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .project-edit-filters {
+    width: 100%;
+  }
+
+  .project-edit-filters label,
+  .project-edit-filters select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .project-workload-statistics {
+    gap: 8px;
+  }
+
+  .project-edit-card .client-edit-card-heading {
+    flex-direction: column;
+  }
+
+  .project-edit-card .client-edit-badges {
+    justify-content: flex-start;
+  }
+}

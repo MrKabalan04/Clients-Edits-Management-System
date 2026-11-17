@@ -16,14 +16,19 @@ class ProjectTest extends TestCase
         $admin = $this->createAdminUser();
         $client = $this->createClient();
         $company = $this->createCompany($client);
-        $this->createProject($company);
+        $project = $this->createProject($company);
+        $this->createEdit($project);
 
         $response = $this->withToken($admin->createToken('auth_token')->plainTextToken)
             ->getJson('/api/projects');
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonCount(1, 'data');
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.edits_count', 1)
+            ->assertJsonPath('data.0.pending_edits_count', 1)
+            ->assertJsonPath('data.0.completed_edits_count', 0)
+            ->assertJsonPath('data.0.company.client.id', $client->id);
     }
 
     public function test_admin_can_create_a_project(): void
@@ -67,6 +72,80 @@ class ProjectTest extends TestCase
             ->assertJsonPath('data.name', $project->name)
             ->assertJsonPath('data.company.id', $company->id)
             ->assertJsonPath('data.company.client.id', $client->id);
+    }
+
+    public function test_admin_can_retrieve_project_details_and_calculated_statistics(): void
+    {
+        $admin = $this->createAdminUser();
+        $client = $this->createClient();
+        $company = $this->createCompany($client);
+        $project = $this->createProject($company);
+        $pendingEdit = $this->createEdit($project, [
+            'title' => 'Pending unpaid edit',
+            'price' => '100.00',
+            'is_paid' => false,
+        ]);
+        $this->createAttachment($pendingEdit);
+        $this->createEdit($project, [
+            'title' => 'Confirmed paid edit',
+            'status' => 'confirmed',
+            'price' => '25.00',
+            'is_paid' => true,
+        ]);
+        $this->createEdit($project, [
+            'title' => 'In-progress edit without price',
+            'status' => 'in_progress',
+            'price' => null,
+            'is_paid' => false,
+        ]);
+        $this->createEdit($project, [
+            'title' => 'Completed paid edit',
+            'status' => 'done',
+            'price' => '50.50',
+            'is_paid' => true,
+        ]);
+        $this->createEdit($project, [
+            'title' => 'Cancelled unpaid edit',
+            'status' => 'cancelled',
+            'price' => '5.00',
+            'is_paid' => false,
+        ]);
+
+        $response = $this->withToken($admin->createToken('auth_token')->plainTextToken)
+            ->getJson('/api/projects/'.$project->id.'/details');
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Project details retrieved successfully.')
+            ->assertJsonPath('data.project.id', $project->id)
+            ->assertJsonPath('data.company.id', $company->id)
+            ->assertJsonPath('data.client.id', $client->id)
+            ->assertJsonPath('data.statistics.edits', 5)
+            ->assertJsonPath('data.statistics.pending_edits', 1)
+            ->assertJsonPath('data.statistics.confirmed_edits', 1)
+            ->assertJsonPath('data.statistics.in_progress_edits', 1)
+            ->assertJsonPath('data.statistics.completed_edits', 1)
+            ->assertJsonPath('data.statistics.cancelled_edits', 1)
+            ->assertJsonPath('data.statistics.total_value', '180.50')
+            ->assertJsonPath('data.statistics.paid_amount', '75.50')
+            ->assertJsonPath('data.statistics.outstanding_amount', '105.00')
+            ->assertJsonCount(5, 'data.edits')
+            ->assertJsonPath('data.edits.4.attachments_count', 1);
+    }
+
+    public function test_project_details_returns_zero_totals_when_project_has_no_edits(): void
+    {
+        $admin = $this->createAdminUser();
+        $project = $this->createProject($this->createCompany($this->createClient()));
+
+        $this->withToken($admin->createToken('auth_token')->plainTextToken)
+            ->getJson('/api/projects/'.$project->id.'/details')
+            ->assertOk()
+            ->assertJsonPath('data.statistics.edits', 0)
+            ->assertJsonPath('data.statistics.total_value', '0.00')
+            ->assertJsonPath('data.statistics.paid_amount', '0.00')
+            ->assertJsonPath('data.statistics.outstanding_amount', '0.00')
+            ->assertJsonCount(0, 'data.edits');
     }
 
     public function test_admin_can_update_a_project(): void
@@ -160,6 +239,10 @@ class ProjectTest extends TestCase
             ->assertStatus(401)
             ->assertJsonPath('success', false);
 
+        $this->getJson('/api/projects/1/details')
+            ->assertStatus(401)
+            ->assertJsonPath('success', false);
+
         $this->putJson('/api/projects/1', [])
             ->assertStatus(401)
             ->assertJsonPath('success', false);
@@ -202,6 +285,12 @@ class ProjectTest extends TestCase
 
         $this->withToken($token)
             ->getJson('/api/projects/'.$project->id)
+            ->assertStatus(403)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Forbidden. Administrator access is required.');
+
+        $this->withToken($token)
+            ->getJson('/api/projects/'.$project->id.'/details')
             ->assertStatus(403)
             ->assertJsonPath('success', false)
             ->assertJsonPath('message', 'Forbidden. Administrator access is required.');
@@ -282,6 +371,17 @@ class ProjectTest extends TestCase
             ->getJson('/api/projects/999999');
 
         $response->assertStatus(404)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Project not found.');
+    }
+
+    public function test_requesting_details_for_a_nonexistent_project_returns_not_found(): void
+    {
+        $admin = $this->createAdminUser();
+
+        $this->withToken($admin->createToken('auth_token')->plainTextToken)
+            ->getJson('/api/projects/999999/details')
+            ->assertNotFound()
             ->assertJsonPath('success', false)
             ->assertJsonPath('message', 'Project not found.');
     }
